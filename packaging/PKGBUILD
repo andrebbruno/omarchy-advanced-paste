@@ -1,0 +1,32 @@
+# Maintainer: Andre Bruno
+pkgname=omarchy-advanced-paste
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Advanced Paste for Omarchy — transform the clipboard on its way into the window (PowerToys Advanced Paste, ported)"
+arch=('any')
+url="https://github.com/andrebbruno/omarchy-advanced-paste"
+license=('MIT')
+depends=('python' 'wl-clipboard' 'wtype')
+optdepends=('gum: menu fallback outside Omarchy'
+            'claude-code: the AI transform (any agent set with `omarchy default agent` works)')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+checkdepends=('python-pytest')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  PYTHONPATH="$PWD" python -m pytest tests -q
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}
